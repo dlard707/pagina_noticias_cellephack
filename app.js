@@ -10,7 +10,7 @@ const noticias = require('./mockup')
 //incorpoar o ejs para renderizar as páginas
 app.set('view engine', 'ejs');
 //Adicionar suporte para arquivos estaticos
-app.use(express.static('./public/public'));
+app.use(express.static('./app/public'));
 //dinindo o caminho para a pasta views
 app.set('views', './app/views');
 
@@ -23,7 +23,15 @@ app.get('/', (req, res) => {
 
 //Criando uma rota para a página noticias
 app.get('/noticias', (req, res) => {
-    res.send('Notícias!');
+    res.render('noticias/noticias', { noticias: noticias });
+})
+
+//Criando uma rota para a página noticia
+app.get('/noticia', (req, res) => {
+//recuperando o id da noticia por get
+    var id = req.query.id;
+
+    res.render('noticia/noticia', { noticias: noticias[id] });
 })
 
 app.listen(3000, () => {
