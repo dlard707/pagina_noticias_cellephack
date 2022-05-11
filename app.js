@@ -1,35 +1,20 @@
-//importando o express
-const express = require('express');
-const session = require('express-session');
-
-//Criando um objeto express na variável app
-const app = express();
+const app = require('./config/server');
 
 //Pegar noticias do Mockup
-const noticias = require('./mockup')
+// const noticias = require('./mockup')
 
-//incorpoar o ejs para renderizar as páginas
-app.set('view engine', 'ejs');
-//Adicionar suporte para arquivos estaticos
-app.use(express.static('./app/public'));
-//dinindo o caminho para a pasta views
-app.set('views', './app/views');
+const db = require('./config/dbConnection');
 
-//Configuração express-session
-app.use(session({
-    secret: '7jPLP=C:(Rj{.ft}',
-    resave: false,
-    saveUninitialized: false
-}));
-
-//Configuração do body-parser e json-parser
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const port = process.env.PORT || 3000;
 
 //Criando uma rota para a página inicial
-app.get('/', (req, res) => {
+app.get('/', async(req, res) => {
     // res.send('Hello World!');
-    res.render('home/index', { noticias: noticias.slice(0,3) });
+    // res.render('home/index', { noticias: noticias.slice(0,3) });
+    var result = await db.query('SELECT * FROM noticias ORDER BY id_noticia DESC LIMIT 3');
+
+    //Passando dados para o template
+    res.render('home/index', { noticias: result.rows, title: 'Home' });
 });
 
 //Criando uma rota para a página noticias
@@ -65,7 +50,7 @@ app.get('/admin', (req, res) => {
     }
 })
 
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log('Server iniciado na porta 3000');
     console.log("Pressione CTRL + C para interrompir o servidor");
 })
