@@ -34,8 +34,8 @@ app.get('/noticia', async(req, res) => {
     res.render('noticias/noticia', { noticias: result.rows[0], title: 'Noticia' });
 })
 
-//Rota responsável plea autenticação
-app.post('/admin', (req, res) => {
+//Rota responsável pela autenticação
+app.post('/admin/autenticar', (req, res) => {
 
     const {usuario, senha} = req.body;
 
@@ -52,6 +52,21 @@ app.get('/admin', (req, res) => {
     }else{
         res.render('admin/login', {title:'Login'})
     }
+})
+
+//Rota responsável por salvar as noticias
+app.post('/admin/salvar-noticia', async(req, res) => {
+    //recupera infromações passadas por post
+    const { titulo, conteudo} = req.body;
+
+    //Criando um objeto com as informações
+    await db.query('INSERT INTO noticias (titulo, conteudo) VALUES ($1, $2)', [titulo, conteudo], (err, result) => {res.redirect('/noticias')});
+})
+
+//Rota responsável pela saida do usuário
+app.get('/admin/sair', (req, res) => {
+    req.session.destroy((err) => {});
+    res.redirect('/admin');
 })
 
 app.listen(port, () => {
