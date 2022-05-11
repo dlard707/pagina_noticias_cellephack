@@ -18,16 +18,20 @@ app.get('/', async(req, res) => {
 });
 
 //Criando uma rota para a página noticias
-app.get('/noticias', (req, res) => {
-    res.render('noticias/noticias', { noticias: noticias });
+app.get('/noticias', async(req, res) => {
+
+    var result = await db.query('SELECT * FROM noticias ORDER BY id_noticia DESC');
+    res.render('noticias/noticias', { noticias: result.rows, title: 'Noticias' });
 })
 
 //Criando uma rota para a página noticia
-app.get('/noticia', (req, res) => {
+app.get('/noticia', async(req, res) => {
 //recuperando o id da noticia por get
     var id = req.query.id;
 
-    res.render('noticias/noticia', { noticias: noticias[id] });
+    let result = await db.query('SELECT * FROM noticias WHERE id_noticia = $1', [id]);
+
+    res.render('noticias/noticia', { noticias: result.rows[0], title: 'Noticia' });
 })
 
 //Rota responsável plea autenticação
